@@ -1,0 +1,23 @@
+{
+    "bridge": {
+        "name": "Powers Homebridge",
+        "username": "[REDACTED]",
+        "port": 51826,
+        "pin": "[REDACTED]"
+    },
+    "description": "Powersnet Homebridge",
+    "accessories": [],
+    "platforms": [
+         {
+             "platform":"TplinkSmarthome",
+             "name":"TplinkSmarthome",
+             "switchModels":["HS200"]
+         },
+         {
+             "platform":"VesyncPlug",
+             "name":"VesyncPlug",
+             "username":"[REDACTED]",
+             "password":"[REDACTED]"
+         }
+    ]
+}

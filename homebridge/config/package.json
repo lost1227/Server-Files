@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "homebridge-tplink-smarthome": "^4.0.1",
+    "homebridge-vesync": "^0.9.5"
+  }
+}

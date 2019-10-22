@@ -1,0 +1,26 @@
+version: '2'
+services:
+  openvpn:
+    container_name: obfsproxy_ovpn
+    image: kylemanna/openvpn
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - "8443:1194/tcp"
+    restart: unless-stopped
+    volumes:
+      - ./data/openvpn:/etc/openvpn
+  obfsproxy:
+    container_name: obfsproxy
+    image: vimagick/obfsproxy
+    ports:
+      - "8080:8080/tcp"
+    restart: unless-stopped
+    volumes:
+      - ./data/obfsproxy:/var/lib/obfsproxy
+    environment:
+      - PASSWORD=[REDACTED]
+      - DEST_ADDR=obfsproxy_ovpn
+      - DEST_PORT=1194
+      - LISTEN_ADDR=0.0.0.0
+      - LISTEN_PORT=8080 

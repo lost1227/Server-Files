@@ -1,0 +1,45 @@
+version: "2"
+services:
+  pihole:
+    container_name: pihole
+    hostname: pihole
+    image: pihole/pihole:latest
+    environment:
+      TZ: 'America/Los_Angeles'
+      DNS1: '10.5.0.4'
+      DNS2: 'no'
+    volumes:
+      - './data/pihole/:/etc/pihole/'
+      - './data/dnsmasq.d/:/etc/dnsmasq.d/'
+      - './data/powersdns/:/etc/powersdns/'
+    dns:
+      - 127.0.0.1
+      - 10.5.0.4
+    restart: unless-stopped
+    cpu_shares: 2048
+    networks:
+      pihole_net:
+        ipv4_address: 10.5.0.2
+      external_net:
+        ipv4_address: 192.168.1.242
+  unbound:
+    container_name: unbound
+    image: mvance/unbound
+    expose:
+      - 53
+    volumes:
+      - './data/unbound/:/opt/unbound/etc/unbound/'
+    restart: unless-stopped
+    cpu_shares: 2048
+    networks:
+      pihole_net:
+        ipv4_address: 10.5.0.4
+networks:
+  pihole_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.0.0/24
+  external_net:
+    external:
+      name: external_net

@@ -1,0 +1,116 @@
+version: '2'
+services:
+  plex:
+    container_name: plex
+    image: plexinc/pms-docker
+    restart: unless-stopped
+    cpu_shares: 1536
+    ports:
+      - "32400:32400/tcp"
+      - "3005:3005/tcp"
+      - "8324:8324/tcp"
+      - "32469:32469/tcp"
+      - "1900:1900/udp"
+      - "32410:32410/udp"
+      - "32412:32412/udp"
+      - "32413:32413/udp"
+      - "32414:32414/udp"
+    environment:
+      - TZ=America/Los_Angeles
+      - ADVERTISE_IP=http://192.168.1.201:32400/
+      - PLEX_CLAIM=[REDACTED]
+      - PUID=1000
+      - PGID=1000
+      - ALLOWED_NETWORKS=192.168.1.0/24,172.16.0.0/16
+    hostname: plex-server
+    volumes:
+      - ./data/plex/config:/config
+      - ./data/plex/transcode:/transcode
+      - ./data/plex/video_files:/data
+      - ./data/plex/tv_dvr:/tv_dvr
+      - tv-volume:/sonarr
+      - movie-volume:/radarr
+  sonarr:
+    image: linuxserver/sonarr
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Los_Angeles
+    volumes:
+      - ./data/sonarr/config:/config
+      - tv-volume:/tv
+      - download-volume:/downloads
+    expose:
+      - "8989"
+    restart: unless-stopped
+  radarr:
+    image: linuxserver/radarr
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Los_Angeles
+    volumes:
+      - ./data/radarr/config:/config
+      - movie-volume:/movies
+      - download-volume:/downloads
+    expose:
+      - "7878"
+    restart: unless-stopped
+  transmission:
+    image: linuxserver/transmission
+    container_name: transmission
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Los_Angeles
+    volumes:
+      - ./data/transmission/config:/config
+      - download-volume:/downloads
+      - ./data/transmission/watch:/watch
+    expose:
+      - "9091"
+    ports:
+      - 192.168.1.201:51413:51413
+      - 192.168.1.201:51413:51413/udp
+    restart: unless-stopped
+  jackett:
+    image: linuxserver/jackett
+    container_name: jackett
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Los_Angeles
+    volumes:
+      - ./data/jackett/config:/config
+      - ./data/jackett/downloads:/downloads
+    expose:
+      - "9117"
+    restart: unless-stopped
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    volumes: 
+      - ./data/nginx/conf.d:/etc/nginx/conf.d
+      - ./data/nginx/html:/var/www/html
+    ports:
+      - "8989:80"
+    restart: unless-stopped
+  ombi:
+    image: linuxserver/ombi
+    container_name: ombi
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Los_Angeles
+      - BASE_URL=/ombi
+    volumes:
+      - ./data/ombi/config:/config
+    expose:
+      - "3579"
+    restart: unless-stopped
+volumes:
+  download-volume:
+  tv-volume:
+  movie-volume:

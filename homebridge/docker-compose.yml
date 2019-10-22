@@ -1,0 +1,27 @@
+version: '2'
+services:
+  homebridge:
+    image: oznu/homebridge:latest
+    restart: always
+    environment:
+      - TZ=America/Los_Angeles
+      - PGID=1000
+      - PUID=1000
+    volumes:
+      - ./config:/homebridge
+    networks:
+      homebridge_net:
+        ipv4_address: 192.168.2.254
+
+networks:
+  homebridge_net:
+    driver: ipvlan
+    driver_opts:
+      parent: enp2s0f0.20
+      ipvlan_mode: l2
+    ipam:
+      config:
+        - subnet: 192.168.2.0/24
+          gateway: 192.168.2.1
+
+

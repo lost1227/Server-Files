@@ -1,0 +1,23 @@
+version: '3'
+services:
+    nginx:
+        image: nginx:alpine
+        restart: always
+        command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+        volumes:
+            - ./data/nginx/conf.d:/etc/nginx/conf.d
+            - ./data/nginx/powers.myq-see.com:/var/www/powers.myq-see.com
+            - ./data/certbot/conf:/etc/letsencrypt
+            - certbot-root:/var/www/certbot
+        ports:
+            - '80:80/tcp'
+            - '443:443/tcp'
+    certbot:
+        image: certbot/certbot
+        restart: always
+        entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+        volumes:
+            - ./data/certbot/conf:/etc/letsencrypt
+            - certbot-root:/var/www/certbot
+volumes:
+    certbot-root:

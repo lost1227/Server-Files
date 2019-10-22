@@ -1,0 +1,37 @@
+version: '2.2'
+services:
+  mongo:
+    image: mongo:3.4
+    networks:
+      unifi:
+    restart: always
+    volumes:
+      - db:/data/db
+  controller:
+    image: "jacobalberty/unifi:${TAG:-latest}"
+    depends_on:
+      - mongo
+    init: true
+    restart: always
+    volumes:
+      - ./data/unifi/data:/unifi/data
+      - ./data/unifi/log:/unifi/log
+      - ./data/unifi/cert:/unifi/cert
+      - ./data/unifi/init:/unifi/init.d
+    environment:
+      DB_URI: mongodb://mongo/unifi
+      STATDB_URI: mongodb://mongo/unifi_stat
+      DB_NAME: unifi
+      RUNAS_UID0: 'false'
+    networks:
+      unifi:
+      external_net:
+        ipv4_address: 192.168.1.243
+volumes:
+  db:
+networks:
+  unifi:
+  external_net:
+    external:
+      name: external_net       
+    
