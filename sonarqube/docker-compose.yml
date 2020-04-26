@@ -1,0 +1,27 @@
+version: '3'
+services:
+    sonarqube:
+        image: sonarqube
+        restart: unless-stopped
+        environment:
+            - SONAR_WEB_PORT=9000
+            - SONAR_JDBC_USERNAME=sonarqube
+            - SONAR_JDBC_PASSWORD=sonarqube
+            - SONAR_JDBC_URL=jdbc:postgresql://postgres:5432/postgres
+            # - SONAR_WEB_CONTEXT=/sonarqube
+        volumes:
+            - ./data/sonarqube/data:/opt/sonarqube/data
+            - ./data/sonarqube/logs:/opt/sonarqube/logs
+            - ./data/sonarqube/extensions:/opt/sonarqube/extensions
+            - ./data/sonarqube/conf:/opt/sonarqube/conf
+        ports:
+            - 9000:9000
+    postgres:
+        image: postgres
+        restart: unless-stopped
+        environment:
+            - POSTGRES_PASSWORD=AZfEG-*k?}<Wh953
+        volumes:
+            - ./data/postgres/data:/var/lib/postgresql/data
+        expose:
+            - 5432
